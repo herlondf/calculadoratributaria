@@ -10,6 +10,7 @@ interface
 uses
   System.SysUtils,
   Imposto.Utils,
+  Imposto.Aliquota,
   Imposto.Contract;
 
 type
@@ -23,8 +24,8 @@ type
 
     FAliquotaICMS  : Extended;
     FAliquotaICMSST: Extended;
-    FCST           : TCSTIcms;
-    FCSOSN         : TCSOSNIcms;
+    FCST           : TpcnCSTIcms;
+    FCSOSN         : TpcnCSOSNIcms;
     FReducaoBC     : Extended;
     FReducaoBCST   : Extended;
     FDiferimento   : Extended;
@@ -33,17 +34,11 @@ type
     FST            : Extended;
     FICMSSTRet     : Extended;
   public
-    function CST(const Value: TCSTIcms): iImpostoICMS; overload;
-    function CST: TCSTIcms; overload;
+    function CST(const Value: TpcnCSTIcms): iImpostoICMS; overload;
+    function CST: TpcnCSTIcms; overload;
 
-    function CSOSN(const Value: TCSOSNIcms): iImpostoICMS; overload;
-    function CSOSN: TCSOSNIcms; overload;
-
-    ///<summary>
-    ///  Aliquota de ICMS no Simples Nacional
-    ///  Tag: <pCredSN>
-    ///</summary>
-    function AliquotaSN(const pCredSN: Extended): iImpostoICMS; overload;
+    function CSOSN(const Value: TpcnCSOSNIcms): iImpostoICMS; overload;
+    function CSOSN: TpcnCSOSNIcms; overload;
 
     ///<summary>
     ///  Aliquota de ICMS Próprio
@@ -149,15 +144,16 @@ constructor TImpostoICMS.Create(AImpostoItem: iImpostoItem);
 begin
   FImpostoItem := AImpostoItem;
 
-  FCST          := cstVazio;
-  FCSOSN        := csosnVazio;
-  FAliquotaICMS := 0;
-  FReducaoBC    := 0;
-  FDiferimento  := 0;
-  FMVAST        := 0;
-  FBCSTRet      := 0;
-  FST           := 0;
-  FICMSSTRet    := 0;
+  FCST            := TpcnCSTIcms.cstVazio;
+  FCSOSN          := TpcnCSOSNIcms.csosnVazio;
+  FAliquotaICMS   := 0;
+  FAliquotaICMSST := 0;
+  FReducaoBC      := 0;
+  FDiferimento    := 0;
+  FMVAST          := 0;
+  FBCSTRet        := 0;
+  FST             := 0;
+  FICMSSTRet      := 0;
 end;
 
 destructor TImpostoICMS.Destroy;
@@ -171,39 +167,36 @@ begin
   Result := Self.Create(AImpostoItem);
 end;
 
-function TImpostoICMS.CST(const Value: TCSTIcms): iImpostoICMS;
+function TImpostoICMS.CST(const Value: TpcnCSTIcms): iImpostoICMS;
 begin
   Result := Self;
-  FCST := Value;
 
-  if FImpostoItem.Retorno.CRT in [crtSimplesNacional] then
-    FCST := cstVazio;
+  if Value <> TpcnCSTIcms.cstVazio then
+  begin
+    FCST := Value;
+    FCSOSN := TpcnCSOSNIcms.csosnVazio;
+  end;
 end;
 
-function TImpostoICMS.CST:TCSTIcms;
+function TImpostoICMS.CST:TpcnCSTIcms;
 begin
   Result := FCST;
 end;
 
-function TImpostoICMS.CSOSN(const Value: TCSOSNIcms): iImpostoICMS;
+function TImpostoICMS.CSOSN(const Value: TpcnCSOSNIcms): iImpostoICMS;
 begin
   Result := Self;
-  FCSOSN := Value;
 
-  if FImpostoItem.Retorno.CRT in [crtSimplesExcessoReceita, crtRegimeNormal] then
-    FCSOSN := csosnVazio;
+  if Value <> TpcnCSOSNIcms.csosnVazio then
+  begin
+    FCSOSN := Value;
+    FCST := TpcnCSTIcms.cstVazio;
+  end;
 end;
 
-function TImpostoICMS.CSOSN: TCSOSNIcms;
+function TImpostoICMS.CSOSN: TpcnCSOSNIcms;
 begin
   Result := FCSOSN;
-end;
-
-function TImpostoICMS.AliquotaSN(const pCredSN: Extended): iImpostoICMS;
-begin
-  { Por uma regra estadual, pode ser adicionado aliquotasn por item }
-  Result := Self;
-  FImpostoItem.Retorno.AliquotaSN(pCredSN);
 end;
 
 function TImpostoICMS.AliquotaICMS(const pICMS: Extended): iImpostoICMS;
@@ -215,14 +208,7 @@ end;
 function TImpostoICMS.AliquotaICMS: Extended;
 begin
   Result := 0;
-  if FCST <> cstVazio then
-  begin
-    case FCST of
-      cst30: ;
-    else
-      Result := FAliquotaICMS;
-    end;
-  end;
+  Result := FAliquotaICMS;
 end;
 
 function TImpostoICMS.AliquotaICMSST(const pICMSST: Extended): iImpostoICMS;
@@ -233,7 +219,10 @@ end;
 
 function TImpostoICMS.AliquotaICMSST: Extended;
 begin
-  Result := FAliquotaICMSST;
+  if FAliquotaICMSST <> 0 then
+    Result := FAliquotaICMSST
+  else
+    Result :=  BuscarAliquota( FImpostoItem.Retorno.UFOrigem, FImpostoItem.Retorno.UFDestino );
 end;
 
 function TImpostoICMS.AliquotaST(const pST: Extended): iImpostoICMS;

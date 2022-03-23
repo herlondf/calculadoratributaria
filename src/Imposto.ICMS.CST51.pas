@@ -9,6 +9,7 @@ uses
 
   function ValorBaseICMS51(AImpostoItem: iImpostoItem): Double;
   function ValorICMS51(AImpostoItem: iImpostoItem): Double;
+  function ValorICMS51Op(AImpostoItem: iImpostoItem): Double;
   function ValorICMS51Diferido(AImpostoItem: iImpostoItem): Double;
 
 implementation
@@ -26,12 +27,20 @@ end;
 
 function ValorICMS51(AImpostoItem: iImpostoItem): Double;
 begin
+  Result := RoundABNT( ValorICMS51Op(AImpostoItem) - ValorICMS51Diferido(AImpostoItem), 2 );
+end;
+
+function ValorICMS51Op(AImpostoItem: iImpostoItem): Double;
+begin
   Result := RoundABNT( ( AImpostoItem.ICMS.AliquotaICMS / 100 ) * ValorBaseICMS51( AImpostoItem ), 2 );
 end;
 
 function ValorICMS51Diferido(AImpostoItem: iImpostoItem): Double;
 begin
-  Result := RoundABNT( ( AImpostoItem.ICMS.Diferimento / 100 ) * ValorICMS51( AImpostoItem ), 2 );
+  if AImpostoItem.ICMS.Diferimento > 0 then
+    Result := RoundABNT( ( AImpostoItem.ICMS.Diferimento / 100 ) * ValorICMS51Op( AImpostoItem ), 2 )
+  else
+    Result := 0;
 end;
 
 end.

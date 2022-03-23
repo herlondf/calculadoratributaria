@@ -13,11 +13,11 @@ implementation
 
 function ValorBaseICMS(AImpostoItem: iImpostoItem): Double;
 begin
-  if ( AImpostoItem.Retorno.IEDest = inNaoContribuinte ) then
+  if ( AImpostoItem.Retorno.IEDest = TpcnindIEDest.inNaoContribuinte ) then
     Result := (
         AImpostoItem.IPI.ValorIPI          +
         (
-          AImpostoItem.Det.tagProd.vProdComDescUnit   +
+          AImpostoItem.Det.tagProd.vProd   +
           AImpostoItem.Det.tagProd.vFrete  +
           AImpostoItem.Det.tagProd.vSeg    +
           AImpostoItem.Det.tagProd.vOutro
@@ -26,7 +26,7 @@ begin
       AImpostoItem.Det.tagProd.vDesc
   else
     Result := (
-      AImpostoItem.Det.tagProd.vProdComDescUnit   +
+      AImpostoItem.Det.tagProd.vProd   +
       AImpostoItem.Det.tagProd.vFrete  +
       AImpostoItem.Det.tagProd.vSeg    +
       AImpostoItem.Det.tagProd.vOutro
@@ -37,9 +37,9 @@ end;
 function ValorBaseIPI(AImpostoItem: iImpostoItem): Double;
 begin
   Result := (
-      AImpostoItem.Det.tagProd.vProdComDescUnit   +
-      AImpostoItem.Det.tagProd.vFrete  +
-      AImpostoItem.Det.tagProd.vSeg    +
+      AImpostoItem.Det.tagProd.vProdComDescUnit  +
+      AImpostoItem.Det.tagProd.vFrete            +
+      AImpostoItem.Det.tagProd.vSeg              +
       AImpostoItem.Det.tagProd.vOutro
   );
 end;

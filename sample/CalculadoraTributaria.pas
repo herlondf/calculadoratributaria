@@ -14,6 +14,7 @@ uses
   Vcl.Dialogs,
   Vcl.StdCtrls,
 
+  pcnConversao,
   Imposto,
   Imposto.Utils,
   Imposto.Log;
@@ -24,8 +25,11 @@ type
   private
     function GetValue: Double;
     procedure SetValue(AValue: Double);
+
+    function GetAsInteger: Integer;
 	public
 	   property Value: Double read GetValue write SetValue;
+     property AsInteger: Integer read GetAsInteger;
 	end;
 
   TfrmCalculadoraTributaria = class(TForm)
@@ -113,8 +117,12 @@ type
     procedure btnAdicionarClick(Sender: TObject);
     procedure btnInicializarClick(Sender: TObject);
     procedure btnSimularClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure edtOnChange(Sender: TObject);
   private
     { Private declarations }
+    FImpostoInvoker: iImposto;
+
     procedure AtualizarCampos;
     procedure ValidarInterface;
     procedure Logar(Value: Variant);
@@ -142,6 +150,11 @@ implementation
 
 { TEditValue }
 
+function TEditValue.GetAsInteger: Integer;
+begin
+  Result := StrToIntDef( Self.Text, 0 );
+end;
+
 function TEditValue.GetValue: Double;
 begin
   Result := StrToFloatDef( Self.Text, 0 );
@@ -153,6 +166,11 @@ begin
 end;
 
 { TFrmCalculadoraTributaria }
+
+procedure TfrmCalculadoraTributaria.FormCreate(Sender: TObject);
+begin
+  Inicializar;
+end;
 
 procedure TfrmCalculadoraTributaria.FormShow(Sender: TObject);
 begin
@@ -176,6 +194,11 @@ begin
   Simular;
 end;
 
+procedure TfrmCalculadoraTributaria.edtOnChange(Sender: TObject);
+begin
+  AdicionarItem;
+end;
+
 procedure TfrmCalculadoraTributaria.btnAdicionarClick(Sender: TObject);
 begin
   AdicionarItem;
@@ -197,46 +220,46 @@ end;
 
 procedure TfrmCalculadoraTributaria.PreencherComboCRT;
 var
-  I: TCRT;
+  I: TpcnCRT;
 begin
   cmbCRT.Clear;
-  for I := Low(TCRT) to High(TCRT) do
+  for I := Low(TpcnCRT) to High(TpcnCRT) do
     cmbCRT.Items.Add( CRTToStr(I) );
 end;
 
 procedure TfrmCalculadoraTributaria.PreencherComboIndIEDest;
 var
-  I: TIndIEDest;
+  I: TpcnIndIEDest;
 begin
   cmbIndIEDest.Clear;
-  for I := Low(TIndIEDest) to High(TIndIEDest) do
+  for I := Low(TpcnIndIEDest) to High(TpcnIndIEDest) do
     cmbIndIEDest.Items.Add( IndIEDestToStr(I) );
 end;
 
 procedure TfrmCalculadoraTributaria.PreencherComboCST;
 var
-  I: TCSTIcms;
+  I: TpcnCSTIcms;
 begin
   cmbCST.Clear;
-  for I := Low(TCSTIcms) to High(TCSTIcms) do
+  for I := Low(TpcnCSTIcms) to High(TpcnCSTIcms) do
     cmbCST.Items.Add( CSTICMSToStr(I) );
 end;
 
 procedure TfrmCalculadoraTributaria.PreencherComboCSTIPI;
 var
-  I: TCSTIpi;
+  I: TpcnCSTIpi;
 begin
   cmbCSTIpi.Clear;
-  for I := Low(TCSTIpi) to High(TCSTIpi) do
+  for I := Low(TpcnCSTIpi) to High(TpcnCSTIpi) do
     cmbCSTIpi.Items.Add( CSTIPIToStr(I) );
 end;
 
 procedure TfrmCalculadoraTributaria.PreencherComboCSOSN;
 var
-  I: TCSOSNIcms;
+  I: TpcnCSOSNIcms;
 begin
   cmbCSOSN.Clear;
-  for I := Low(TCSOSNIcms) to High(TCSOSNIcms) do
+  for I := Low(TpcnCSOSNIcms) to High(TpcnCSOSNIcms) do
     cmbCSOSN.Items.Add( CSOSNICMSToStr(I) );
 end;
 
@@ -246,20 +269,23 @@ begin
 end;
 
 procedure TfrmCalculadoraTributaria.ValidarInterface;
+var
+  LOk: Boolean;
 begin
-  cmbCST.Enabled             := IntToCRT( cmbCRT.ItemIndex ) in [crtSimplesExcessoReceita, crtRegimeNormal];
-  cmbCSOSN.Enabled           := IntToCRT( cmbCRT.ItemIndex ) in [crtSimplesNacional];
+  cmbCST.Enabled             := StrToCRT( LOk, cmbCRT.Text ) in [crtSimplesExcessoReceita, crtRegimeNormal];
+  cmbCSOSN.Enabled           := StrToCRT( LOk, cmbCRT.Text ) in [crtSimplesNacional];
 
-  lblAliquotaSN.Visible      := IntToCRT( cmbCRT.ItemIndex ) in [crtSimplesNacional];
-  edtAliquotaSN.Visible      := IntToCRT( cmbCRT.ItemIndex ) in [crtSimplesNacional];
+  lblAliquotaSN.Visible      := StrToCRT( LOk, cmbCRT.Text ) in [crtSimplesNacional];
+  edtAliquotaSN.Visible      := StrToCRT( LOk, cmbCRT.Text ) in [crtSimplesNacional];
 
-  lblAliquotaICMSST.Visible  := IntToCRT( cmbCRT.ItemIndex ) in [crtSimplesExcessoReceita, crtRegimeNormal];
-  edtAliquotaICMSST.Visible  := IntToCRT( cmbCRT.ItemIndex ) in [crtSimplesExcessoReceita, crtRegimeNormal];
+  lblAliquotaICMSST.Visible  := StrToCRT( LOk, cmbCRT.Text ) in [crtSimplesExcessoReceita, crtRegimeNormal];
+  edtAliquotaICMSST.Visible  := StrToCRT( LOk, cmbCRT.Text ) in [crtSimplesExcessoReceita, crtRegimeNormal];
 //  lblValorICMSST.Visible     := IntToCRT( cmbCRT.ItemIndex ) in [crtSimplesExcessoReceita, crtRegimeNormal];
 //  edtValorICMSST.Visible     := IntToCRT( cmbCRT.ItemIndex ) in [crtSimplesExcessoReceita, crtRegimeNormal];
 
-  lblAliquotaIPI.Visible     := IntToCSTICMS( cmbCST.ItemIndex ) in [cst00];
-  edtAliquotaIPI.Visible     := IntToCSTICMS( cmbCST.ItemIndex ) in [cst00];
+  lblAliquotaIPI.Visible     := StrToCSTICMS( LOk, cmbCST.Text ) in [cst00];
+  edtAliquotaIPI.Visible     := StrToCSTICMS( LOk, cmbCST.Text ) in [cst00];
+
 //  lblValorBaseICMS.Visible   := IntToCSTICMS( cmbCST.ItemIndex ) in [cst00, cst10, cst20, cst51, cst60, cst90];
 //  edtValorBaseICMS.Visible   := IntToCSTICMS( cmbCST.ItemIndex ) in [cst00, cst10, cst20, cst51, cst60, cst90];
 //  lblValorICMS.Visible       := IntToCSTICMS( cmbCST.ItemIndex ) in [cst00, cst10, cst20, cst51, cst60, cst90];
@@ -273,15 +299,18 @@ begin
 end;
 
 procedure TfrmCalculadoraTributaria.Inicializar;
+var
+  LOk: Boolean;
 begin
-  ImpostoCalc
+  FImpostoInvoker := nil;
+  FImpostoInvoker := ImpostoInvoker;
+
+  FImpostoInvoker
     .OnRecalcular( AtualizarCampos )
 
-    .UF        ( StrToUF( cmbUF.Text   ) )
-    .CRT       ( StrToCRT( cmbCRT.Text ) )
-    .IEDest    ( StrToIndIEDest( cmbIndIEDest.Text ) )
-
-    .AliquotaSN( edtAliquotaSN.Value  )
+    .UF        ( StrToUF( cmbUF.Text                    ) )
+    .CRT       ( StrToCRT( LOk, cmbCRT.Text             ) )
+    .IEDest    ( StrToIndIEDest( LOk, cmbIndIEDest.Text ) )
 
     {Necessario informar dados globais para fazer rateio proporcional}
     .Frete     ( edtFrete.Value       )
@@ -292,47 +321,54 @@ end;
 
 procedure TfrmCalculadoraTributaria.Simular;
 begin
- ImpostoCalc
+  FImpostoInvoker
     .OnRecalcular( AtualizarCampos )
     .Desconto    ( 11.44           );
 
-  ImpostoCalc
-    .TryGetItem        ( 1         )
-      .Quantidade      ( 1         )
-      .ValorUnitario   ( 3.24      );
+  FImpostoInvoker
+    .Item           ( 1         )
+      .Quantidade   ( 1         )
+      .ValorUnitario( 3.24      );
 
-  ImpostoCalc
-    .TryGetItem        ( 2         )
-      .Quantidade      ( 2         )
-      .ValorUnitario   ( 7.16      );
+  FImpostoInvoker
+    .Item           ( 2         )
+      .Quantidade   ( 2         )
+      .ValorUnitario( 7.16      );
 
-  ImpostoCalc
-    .TryGetItem        ( 3         )
-      .Quantidade      ( 3         )
-      .ValorUnitario   ( 60.5      );
+  FImpostoInvoker
+    .Item           ( 3         )
+      .Quantidade   ( 3         )
+      .ValorUnitario( 60.5      );
 
-  ImpostoCalc
-    .TryGetItem        ( 4         )
-      .Quantidade      ( 4         )
-      .ValorUnitario   ( 8.22      );
+  FImpostoInvoker
+    .Item           ( 4         )
+      .Quantidade   ( 4         )
+      .ValorUnitario( 8.22      );
 
-  ImpostoCalc
-    .TryGetItem        ( 5         )
-      .Quantidade      ( 5         )
-      .ValorUnitario   ( 15.9      )
+  FImpostoInvoker
+    .Item           ( 5         )
+      .Quantidade   ( 5         )
+      .ValorUnitario( 15.9      )
     .Recalcular;
 end;
 
 procedure TfrmCalculadoraTributaria.AdicionarItem;
+var
+  LOk: Boolean;
 begin
-  ImpostoCalc
+  FImpostoInvoker
     .OnRecalcular( AtualizarCampos )
 
-    .UF        ( StrToUF( cmbUF.Text   ) )
-    .CRT       ( StrToCRT( cmbCRT.Text ) )
-    .IEDest    ( StrToIndIEDest( cmbIndIEDest.Text ) )
+    .OnRecalcularCallBack(
+      procedure(AImposto: iImposto)
+      begin
 
-    .AliquotaSN( edtAliquotaSN.Value  )
+      end
+    )
+
+    .UF        ( StrToUF ( cmbUF.Text                   ) )
+    .CRT       ( StrToCRT( LOk, cmbCRT.Text             ) )
+    .IEDest    ( StrToIndIEDest( LOk, cmbIndIEDest.Text ) )
 
     {Necessario informar dados globais para fazer rateio proporcional}
     .Frete     ( edtFrete.Value       )
@@ -341,18 +377,17 @@ begin
     .Desconto  ( edtDesconto.Value    )
 
     {Dados do item a ser calculado}
-    .TryGetItem        ( edtProdutoID.Value         )
-      .Quantidade      ( edtQuantidade.Value        )
-      .ValorUnitario   ( edtValorUnitario.Value     )
-      .DescontoUnitario( edtDescontoUnitario.Value  )
-      .DescontoTotal   ( edtDescontoTotalItem.Value )
+    .Item               ( edtProdutoID.AsInteger     )
+      .Quantidade       ( edtQuantidade.Value        )
+      .ValorUnitario    ( edtValorUnitario.Value     )
+      .DescontoUnitario ( edtDescontoUnitario.Value  )
+      .DescontoTotal    ( edtDescontoTotalItem.Value )
 
       {Calculo do ICMS/ICMSST}
       .ICMS
         {Metodos abaixo são a base para realizar os calculos tributarios}
-        .CST           ( IntToCSTICMS( cmbCST.ItemIndex )         )
-        .CSOSN         ( IntToCSOSNICMS( cmbCSOSN.ItemIndex )     )
-        .AliquotaSN    ( edtAliquotaST.Value                      )
+        .CST           ( StrToCSTICMS  ( LOk, cmbCST.Text )       )
+        .CSOSN         ( StrToCSOSNICMS( LOk, cmbCSOSN.Text )     )
         .AliquotaICMS  ( edtAliquotaICMS.Value                    )
         .AliquotaICMSST( edtAliquotaICMSST.Value                  )
         .AliquotaST    ( edtAliquotaST.Value                      )
@@ -365,7 +400,7 @@ begin
         .Retorno
 
       .IPI
-        .CST           ( IntToCSTIpi (cmbCSTIPI.ItemIndex )       )
+        .CST           ( StrToCSTIpi ( LOk, cmbCSTIPI.Text )      )
         .AliquotaIPI   ( edtAliquotaIPI.Value                     )
         .Retorno
 
@@ -385,20 +420,20 @@ begin
   mmoLog.Clear;
 
   { Dados de totalizador }
-  edtTotalBC.Value     := ImpostoCalc.Total.ICMSTot.vBC;
-  edtTotalICMS.Value   := ImpostoCalc.Total.ICMSTot.vICMS;
-  edtTotalBCST.Value   := ImpostoCalc.Total.ICMSTot.vBCST;
-  edtTotalICMSST.Value := ImpostoCalc.Total.ICMSTot.vST;
+  edtTotalBC.Value     := FImpostoInvoker.TagTotal.ICMSTot.vBC;
+  edtTotalICMS.Value   := FImpostoInvoker.TagTotal.ICMSTot.vICMS;
+  edtTotalBCST.Value   := FImpostoInvoker.TagTotal.ICMSTot.vBCST;
+  edtTotalICMSST.Value := FImpostoInvoker.TagTotal.ICMSTot.vST;
 
-  edtTotalFrete.Value  := ImpostoCalc.Total.ICMSTot.vFrete;
-  edtTotalSeg.Value    := ImpostoCalc.Total.ICMSTot.vSeg;
-  edtTotalOutros.Value := ImpostoCalc.Total.ICMSTot.vOutro;
-  edtTotalDesc.Value   := ImpostoCalc.Total.ICMSTot.vDesc;
+  edtTotalFrete.Value  := FImpostoInvoker.TagTotal.ICMSTot.vFrete;
+  edtTotalSeg.Value    := FImpostoInvoker.TagTotal.ICMSTot.vSeg;
+  edtTotalOutros.Value := FImpostoInvoker.TagTotal.ICMSTot.vOutro;
+  edtTotalDesc.Value   := FImpostoInvoker.TagTotal.ICMSTot.vDesc;
 
-  edtTotalProd.Value   := ImpostoCalc.Total.ICMSTot.vProd;
-  edtTotalNF.Value     := ImpostoCalc.Total.ICMSTot.vNF;
+  edtTotalProd.Value   := FImpostoInvoker.TagTotal.ICMSTot.vProd;
+  edtTotalNF.Value     := FImpostoInvoker.TagTotal.ICMSTot.vNF;
 
-  for LImpostoItem in ImpostoCalc.Items do
+  for LImpostoItem in FImpostoInvoker.Items do
   begin
     Logar( Format( 'Id: %f'                 , [LImpostoItem.Id])                           );
     Logar( Format( '- vProd: %n'            , [LImpostoItem.Det.tagProd.vProd])            );

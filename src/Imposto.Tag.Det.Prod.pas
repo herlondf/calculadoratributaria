@@ -54,12 +54,18 @@ end;
 
 procedure TImpostoTagDetProd.Recalcular(AImposto: iImposto; ATotalProd: Double);
 begin
-  FProporcao := RoundABNT( ( vProdComDescUnit / ATotalProd ) * 100, 6 );
+  FProporcao := RoundABNT( ( vProdComDescUnit / ATotalProd ) * 100, 2 );
 
-  FvFrete    := RoundABNT( ( ( FProporcao / 100 ) * AImposto.Frete    ), 4 );
-  FvSeg      := RoundABNT( ( ( FProporcao / 100 ) * AImposto.Seguro   ), 4 );
-  FvOutro    := RoundABNT( ( ( FProporcao / 100 ) * AImposto.Despesas ), 4 );
-  FvDesc     := RoundABNT( ( ( FProporcao / 100 ) * AImposto.Desconto ), 4 );
+  FvFrete    := RoundABNT( ( ( FProporcao / 100 ) * AImposto.Frete    ), 2 );
+  FvSeg      := RoundABNT( ( ( FProporcao / 100 ) * AImposto.Seguro   ), 2 );
+  FvOutro    := RoundABNT( ( ( FProporcao / 100 ) * AImposto.Despesas ), 2 );
+  FvDesc     := RoundABNT( ( ( FProporcao / 100 ) * AImposto.Desconto ), 2 );
+
+  if FImpostoItem.DescontoUnitarioPerc > 0 then
+    FImpostoItem.DescontoUnitario( CalcularPercentualValor( FImpostoItem.ValorUnitario, FImpostoItem.DescontoUnitarioPerc ) );
+
+  if FImpostoItem.DescontoTotalPerc > 0 then
+    FImpostoItem.DescontoTotal( CalcularPercentualValor( ( FImpostoItem.Quantidade * FImpostoItem.ValorUnitario ), FImpostoItem.DescontoTotalPerc ) );
 end;
 
 procedure TImpostoTagDetProd.CorrigeRateio(AParamRateio: TParamRateio; AValue: Double);
@@ -74,12 +80,12 @@ end;
 
 function TImpostoTagDetProd.vProd: Extended;
 begin
-  Result := RoundABNT( ( FImpostoItem.Quantidade * FImpostoItem.ValorUnitario ), 4 );
+  Result := RoundABNT( ( FImpostoItem.Quantidade * FImpostoItem.ValorUnitario ), 2 );
 end;
 
 function TImpostoTagDetProd.vProdComDescUnit: Extended;
 begin
-  Result := RoundABNT( ( FImpostoItem.Quantidade *  ( FImpostoItem.ValorUnitario - FImpostoItem.DescontoUnitario  ) - FImpostoItem.DescontoTotal ), 4 )
+  Result := RoundABNT( ( FImpostoItem.Quantidade * ( FImpostoItem.ValorUnitario - FImpostoItem.DescontoUnitario  ) - FImpostoItem.DescontoTotal ), 2 )
 end;
 
 function TImpostoTagDetProd.vFrete: Extended;

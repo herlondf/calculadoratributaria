@@ -73,14 +73,20 @@ type
 
     //Valor do ICMS da Operação
     function vICMSOp : Double;
+    function vICMSDif: Double;
 
     function vCredSN : Double;
+    function pCredSN : Double;
+
+    function pICMSST : Double;
 
     //Valor da BC do ICMS ST
     function vBCST   : Double;
 
     //Valor do ICMS ST
     function vICMSST : Double;
+
+    function pMVAST  : Double;
   end;
 
   iImpostoTagDetImpostoIPI = interface

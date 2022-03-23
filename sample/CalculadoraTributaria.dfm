@@ -8,9 +8,10 @@ object frmCalculadoraTributaria: TfrmCalculadoraTributaria
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
   Font.Height = -11
-  Font.Name = 'Tahoma'
+  Font.Name = 'Segoe UI'
   Font.Style = []
   OldCreateOrder = False
+  OnCreate = FormCreate
   OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 13
@@ -24,14 +25,14 @@ object frmCalculadoraTributaria: TfrmCalculadoraTributaria
   object lblUF: TLabel
     Left = 14
     Top = 8
-    Width = 13
+    Width = 14
     Height = 13
     Caption = 'UF'
   end
   object lblCRT: TLabel
     Left = 268
     Top = 8
-    Width = 166
+    Width = 178
     Height = 13
     Caption = 'CRT (C'#243'digo do Regime Tribut'#225'rio)'
   end
@@ -45,35 +46,35 @@ object frmCalculadoraTributaria: TfrmCalculadoraTributaria
   object lblCSOSN: TLabel
     Left = 555
     Top = 8
-    Width = 34
+    Width = 36
     Height = 13
     Caption = 'CSOSN'
   end
   object lblSeguro: TLabel
     Left = 141
     Top = 78
-    Width = 34
+    Width = 37
     Height = 13
     Caption = 'Seguro'
   end
   object lblDespesas: TLabel
     Left = 268
     Top = 78
-    Width = 87
+    Width = 89
     Height = 13
     Caption = 'Despesas(Outras)'
   end
   object lblDesconto: TLabel
     Left = 395
     Top = 78
-    Width = 69
+    Width = 71
     Height = 13
     Caption = 'Desconto (R$)'
   end
   object lblIndIEDest: TLabel
     Left = 86
     Top = 8
-    Width = 148
+    Width = 159
     Height = 13
     Caption = 'Indicador da IE do destinat'#225'rio'
   end
@@ -106,126 +107,126 @@ object frmCalculadoraTributaria: TfrmCalculadoraTributaria
   object lblQuantidade: TLabel
     Left = 14
     Top = 194
-    Width = 56
+    Width = 61
     Height = 13
     Caption = 'Quantidade'
   end
   object lblValorUnitario: TLabel
     Left = 141
     Top = 194
-    Width = 64
+    Width = 71
     Height = 13
     Caption = 'Valor Unit'#225'rio'
   end
   object lblDescontoUnitario: TLabel
     Left = 14
     Top = 234
-    Width = 85
+    Width = 94
     Height = 13
     Caption = 'Desconto Unit'#225'rio'
   end
   object lblTotalProd: TLabel
     Left = 522
     Top = 340
-    Width = 70
+    Width = 75
     Height = 13
     Caption = 'Total Produtos'
   end
   object lblTotalNF: TLabel
     Left = 649
     Top = 340
-    Width = 40
+    Width = 42
     Height = 13
     Caption = 'Total NF'
   end
   object lblAliquotaICMS: TLabel
     Left = 286
     Top = 194
-    Width = 67
+    Width = 73
     Height = 13
     Caption = 'Al'#237'quota ICMS'
   end
   object lblAliquotaICMSST: TLabel
     Left = 413
     Top = 151
-    Width = 82
+    Width = 88
     Height = 13
     Caption = 'Al'#237'quota ICMS ST'
   end
   object lblAliquotaST: TLabel
     Left = 413
     Top = 194
-    Width = 54
+    Width = 59
     Height = 13
     Caption = 'Al'#237'quota ST'
   end
   object lblAliquotaIPI: TLabel
     Left = 413
     Top = 233
-    Width = 56
+    Width = 59
     Height = 13
     Caption = 'Al'#237'quota IPI'
   end
   object lblMVA: TLabel
     Left = 555
     Top = 194
-    Width = 21
+    Width = 23
     Height = 13
     Caption = 'MVA'
   end
   object lblReducaoBC: TLabel
     Left = 682
     Top = 194
-    Width = 58
+    Width = 61
     Height = 13
     Caption = 'Redu'#231#227'o BC'
   end
   object lblReducaoBCST: TLabel
     Left = 682
     Top = 234
-    Width = 73
+    Width = 76
     Height = 13
     Caption = 'Redu'#231#227'o BC ST'
   end
   object lblDiferimento: TLabel
     Left = 555
     Top = 234
-    Width = 55
+    Width = 61
     Height = 13
     Caption = 'Diferimento'
   end
   object lblBCSTRetido: TLabel
     Left = 809
     Top = 194
-    Width = 62
+    Width = 65
     Height = 13
     Caption = 'BC ST Retido'
   end
   object lblICMSSTRetido: TLabel
     Left = 809
     Top = 234
-    Width = 74
+    Width = 78
     Height = 13
     Caption = 'ICMS ST Retido'
   end
   object lblAliquotaSN: TLabel
     Left = 286
     Top = 234
-    Width = 55
+    Width = 61
     Height = 13
     Caption = 'Al'#237'quota SN'
   end
   object lblCSTIPI: TLabel
     Left = 627
     Top = 8
-    Width = 14
+    Width = 12
     Height = 13
     Caption = 'IPI'
   end
   object lblDescontoTotalItem: TLabel
     Left = 141
     Top = 234
-    Width = 97
+    Width = 102
     Height = 13
     Caption = 'Desconto Total Item'
   end
@@ -252,56 +253,56 @@ object frmCalculadoraTributaria: TfrmCalculadoraTributaria
   object lblTotalBC: TLabel
     Left = 14
     Top = 337
-    Width = 40
+    Width = 41
     Height = 13
     Caption = 'Total BC'
   end
   object lblTotalICMS: TLabel
     Left = 141
     Top = 337
-    Width = 52
+    Width = 54
     Height = 13
     Caption = 'Total ICMS'
   end
   object lblTotalBCST: TLabel
     Left = 268
     Top = 337
-    Width = 55
+    Width = 56
     Height = 13
     Caption = 'Total BC ST'
   end
   object lblTotalICMSST: TLabel
     Left = 395
     Top = 337
-    Width = 67
+    Width = 69
     Height = 13
     Caption = 'Total ICMS ST'
   end
   object lblTotalFrete: TLabel
     Left = 14
     Top = 382
-    Width = 53
+    Width = 54
     Height = 13
     Caption = 'Total Frete'
   end
   object lblTotalSeg: TLabel
     Left = 141
     Top = 382
-    Width = 61
+    Width = 65
     Height = 13
     Caption = 'Total Seguro'
   end
   object lblTotalOutros: TLabel
     Left = 268
     Top = 382
-    Width = 60
+    Width = 64
     Height = 13
     Caption = 'Total Outros'
   end
   object lblTotalDesconto: TLabel
     Left = 395
     Top = 382
-    Width = 75
+    Width = 80
     Height = 13
     Caption = 'Total Desconto '
   end
@@ -384,6 +385,7 @@ object frmCalculadoraTributaria: TfrmCalculadoraTributaria
     Width = 121
     Height = 21
     TabOrder = 12
+    OnChange = edtOnChange
   end
   object edtValorUnitario: TEdit
     Left = 141
@@ -391,6 +393,7 @@ object frmCalculadoraTributaria: TfrmCalculadoraTributaria
     Width = 121
     Height = 21
     TabOrder = 13
+    OnChange = edtOnChange
   end
   object edtDescontoUnitario: TEdit
     Left = 14
@@ -398,6 +401,7 @@ object frmCalculadoraTributaria: TfrmCalculadoraTributaria
     Width = 121
     Height = 21
     TabOrder = 14
+    OnChange = edtOnChange
   end
   object edtTotalProd: TEdit
     Left = 522
@@ -421,6 +425,7 @@ object frmCalculadoraTributaria: TfrmCalculadoraTributaria
     Width = 121
     Height = 21
     TabOrder = 16
+    OnChange = edtOnChange
   end
   object edtAliquotaICMSST: TEdit
     Left = 413
@@ -516,6 +521,7 @@ object frmCalculadoraTributaria: TfrmCalculadoraTributaria
     Width = 121
     Height = 21
     TabOrder = 15
+    OnChange = edtOnChange
   end
   object edtProdutoID: TEdit
     Left = 14

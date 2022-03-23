@@ -135,13 +135,15 @@ begin
 
   for LImpostoItem in AImposto.Items do
   begin
+    if not( LImpostoItem.ICMS.CST in [TpcnCSTIcms.cst30] ) then
+    begin
     FvBC              := FvBC               + LImpostoItem.Det.tagImposto.ICMS.vBC;
     FvICMS            := FvICMS             + LImpostoItem.Det.tagImposto.ICMS.vICMS;
+    end;
+
     FvBCST            := FvBCST             + LImpostoItem.Det.tagImposto.ICMS.vBCST;
     FvST              := FvST               + LImpostoItem.Det.tagImposto.ICMS.vICMSST;
 
-    { Para os rateios, é feito uma etapa de correção no término,
-      porque pode haver divergencia no arredondamento }
     FvFrete           := FvFrete            + LImpostoItem.Det.tagProd.vFrete;
     LvFreteConf       := LvFreteConf        + RoundABNT( LImpostoItem.Det.tagProd.vFrete, 2 );
 
@@ -157,10 +159,12 @@ begin
 
 
     FvNF              := FvNF               + (
-                                                LImpostoItem.Det.tagProd.vProdComDescUnit +
-                                                LImpostoItem.Det.tagProd.vFrete           +
-                                                LImpostoItem.Det.tagProd.vSeg             +
-                                                LImpostoItem.Det.tagProd.vOutro
+                                                LImpostoItem.Det.tagProd.vProd   +
+                                                LImpostoItem.Det.tagProd.vFrete  +
+                                                LImpostoItem.Det.tagProd.vSeg    +
+                                                LImpostoItem.Det.tagProd.vOutro  +
+                                                LImpostoItem.Det.tagImposto.ICMS.vICMSST
+
                                               ) -
                                                 LImpostoItem.Det.tagProd.vDesc;
 

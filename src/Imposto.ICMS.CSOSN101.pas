@@ -28,7 +28,7 @@ end;
 
 function ValorCredSN101(AImpostoItem: iImpostoItem): Double;
 begin
-  Result := RoundABNT( ( AImpostoItem.Retorno.AliquotaSN / 100 ) * ValorBaseICMS101(AImpostoItem), 2 );
+  Result := RoundABNT( ( AImpostoItem.ICMS.AliquotaICMS / 100 ) * ValorBaseICMS101(AImpostoItem), 2 );
 end;
 
 end.

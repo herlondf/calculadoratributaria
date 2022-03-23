@@ -4,6 +4,7 @@ interface
 
 uses
   Imposto.Utils,
+  Imposto.Aliquota,
   Imposto.BaseICMS,
   Imposto.Contract;
 

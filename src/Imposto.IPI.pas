@@ -16,10 +16,10 @@ type
     [weak]
     FImpostoItem: iImpostoItem;
 
-    FCST           : TCSTIpi;
+    FCST           : TpcnCstIpi;
     FAliquotaIPI   : Extended;
   public
-    function CST(const Value: TCSTIpi): iImpostoIPI;
+    function CST(const Value: TpcnCstIpi): iImpostoIPI;
 
     function AliquotaIPI(const Value: Extended): iImpostoIPI; overload;
     function AliquotaIPI: Extended; overload;
@@ -51,13 +51,10 @@ begin
   Result := Self.Create(AImpostoItem);
 end;
 
-function TImpostoIPI.CST(const Value: TCSTIpi): iImpostoIPI;
+function TImpostoIPI.CST(const Value: TpcnCstIpi): iImpostoIPI;
 begin
   Result := Self;
   FCST  := Value;
-
-  if FImpostoItem.Retorno.CRT in [crtSimplesNacional] then
-    FCST := ipiVazio;
 end;
 
 function TImpostoIPI.AliquotaIPI(const Value: Extended): iImpostoIPI;
@@ -76,7 +73,7 @@ begin
   Result := 0;
 
   case FCST of
-    ipi50: Result := ValorIPI50(FImpostoItem);
+    TpcnCSTipi.ipi50: Result := ValorIPI50(FImpostoItem);
   end;
 end;
 

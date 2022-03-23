@@ -8,6 +8,7 @@ uses
   System.Generics.Collections;
 
 type
+  iImposto                        = interface;
   iImpostoItem                    = interface;
   iImpostoICMS                    = interface;
   iImpostoIPI                     = interface;
@@ -37,23 +38,30 @@ type
 
   TParamRateio = (prFrete, prSeg, prOutro, prDesc);
 
-  TOnRecalcular = procedure of object;
+  TOnRecalcular = reference to procedure;
+  TOnRecalcularCallback = reference to procedure(AImposto: iImposto);
+
   TOnChangeItem = procedure of object;
+
 
   iImposto = interface
     ['{884D4D7D-C2EC-42EA-8B2A-F5CBABDBB1FC}']
     function Clear: iImposto;
 
     function OnRecalcular(AOnRecalcular: TOnRecalcular): iImposto;
+    function OnRecalcularCallBack(ACallback: TOnRecalcularCallback): iImposto;
 
-    function UF( AUF: TUF ) : iImposto; overload;
-    function UF: TUF; overload;
+    function UFOrigem( AUF: TUF ) : iImposto; overload;
+    function UFOrigem: TUF; overload;
 
-    function CRT( ACRT : TCRT ) : iImposto; overload;
-    function CRT: TCRT; overload;
+    function UFDestino( AUF: TUF ) : iImposto; overload;
+    function UFDestino: TUF; overload;
 
-    function IEDest( AIndIEDest : TIndIEDest ) : iImposto; overload;
-    function IEDest: TIndIEDest; overload;
+    function CRT( ACRT : TpcnCRT ) : iImposto; overload;
+    function CRT: TpcnCRT; overload;
+
+    function IEDest( AIndIEDest : TpcnIndIEDest ) : iImposto; overload;
+    function IEDest: TpcnIndIEDest; overload;
 
     function Frete     ( const Value: Extended ) : iImposto; overload;
     function Frete: Extended; overload;
@@ -67,60 +75,64 @@ type
     function Desconto  ( const Value: Extended ) : iImposto; overload;
     function Desconto: Extended; overload;
 
-    ///<summary>Aliquota de ICMS no Simples Nacional <pCredSN> </summary>
-    function AliquotaSN(const pCredSN: Extended): iImposto; overload;
-    function AliquotaSN: Extended; overload;
+    function Recalcular: iImposto;
 
-    function Items      : TImpostoItens;
-    function TryGetItem(AId: Double): iImpostoItem;
+    function Items : TImpostoItens;
 
-    function Total  : iImpostoTagTotal;
+    function Item(AId: Integer): iImpostoItem;
+    function ItemDelete(AId: Integer): iImpostoItem;
+
+    function TagTotal : iImpostoTagTotal;
   end;
 
   iImpostoItem = interface
     ['{D51314C2-4F42-4DAC-8629-7EB9D170796A}']
     function OnChangeItem(const Value: TOnChangeItem): iImpostoItem;
 
-    function Id(const Value: Double): iImpostoItem; overload;
-    function Id: Double; overload;
+    function Id(const Value: Integer): iImpostoItem; overload;
+    function Id: Integer; overload;
 
-    function Quantidade(const Value: Extended): iImpostoItem; overload;
-    function Quantidade: Extended; overload;
+    function CFOP(const Value: Integer): iImpostoItem; overload;
+    function CFOP(const Value: String): iImpostoItem; overload;
+    function CFOP: Integer; overload;
 
-    function ValorUnitario(const Value: Extended): iImpostoItem; overload;
-    function ValorUnitario: Extended; overload;
+    function Quantidade(const Value: Double): iImpostoItem; overload;
+    function Quantidade: Double; overload;
 
-    function DescontoUnitario(const Value: Extended): iImpostoItem; overload;
-    function DescontoUnitario: Extended; overload;
+    function ValorUnitario(const Value: Double): iImpostoItem; overload;
+    function ValorUnitario: Double; overload;
 
-    function DescontoTotal(const Value: Extended): iImpostoItem; overload;
-    function DescontoTotal: Extended; overload;
+    function DescontoUnitario(const Value: Double): iImpostoItem; overload;
+    function DescontoUnitario: Double; overload;
 
-    function ICMS   : iImpostoICMS;
-    function IPI    : iImpostoIPI;
-    function PIS    : iImpostoPIS;
-    function COFINS : iImpostoCOFINS;
+    function DescontoUnitarioPerc(const Value: Double): iImpostoItem; overload;
+    function DescontoUnitarioPerc: Double; overload;
 
-    function Det: IImpostoTagDet;
+    function DescontoTotal(const Value: Double): iImpostoItem; overload;
+    function DescontoTotal: Double; overload;
+
+    function DescontoTotalPerc(const Value: Double): iImpostoItem; overload;
+    function DescontoTotalPerc: Double; overload;
+
+    function ICMS    : iImpostoICMS;
+    function IPI     : iImpostoIPI;
+    function PIS     : iImpostoPIS;
+    function COFINS  : iImpostoCOFINS;
 
     function Recalcular: iImpostoItem;
 
-    function Retorno: iImposto;
+    function Det: IImpostoTagDet;
+
+    function Retorno : iImposto;
   end;
 
   iImpostoICMS = interface
     ['{97F60799-BC38-4E19-A129-A3EACD33AFFC}']
-    function CST(const Value: TCSTIcms): iImpostoICMS; overload;
-    function CST: TCSTIcms; overload;
+    function CST(const Value: TpcnCSTIcms): iImpostoICMS; overload;
+    function CST: TpcnCSTIcms; overload;
 
-    function CSOSN(const Value: TCSOSNIcms): iImpostoICMS; overload;
-    function CSOSN: TCSOSNIcms; overload;
-
-    ///<summary>
-    ///  Aliquota de ICMS no Simples Nacional
-    ///  Tag: <pCredSN>
-    ///</summary>
-    function AliquotaSN(const pCredSN: Extended): iImpostoICMS; overload;
+    function CSOSN(const Value: TpcnCSOSNIcms): iImpostoICMS; overload;
+    function CSOSN: TpcnCSOSNIcms; overload;
 
     ///<summary>
     ///  Aliquota de ICMS Próprio
@@ -220,7 +232,7 @@ type
 
   iImpostoIPI = interface
     ['{EE9B22BA-1079-4619-97BE-191FAECE4E0D}']
-    function CST(const Value: TCSTIpi): iImpostoIPI;
+    function CST(const Value: TpcnCstIpi): iImpostoIPI;
 
     function AliquotaIPI(const Value: Extended): iImpostoIPI; overload;
     function AliquotaIPI: Extended; overload;
@@ -232,11 +244,25 @@ type
 
   iImpostoPIS = interface
     ['{044D04A9-0D46-48E1-B51D-DA0003CD7EFD}']
+    function CST(const Value: TpcnCstPis): iImpostoPIS;
+
+    function AliquotaPIS(const Value: Extended): iImpostoPIS; overload;
+    function AliquotaPIS: Extended; overload;
+
+    function ValorPIS: Extended;
+
     function Retorno: iImpostoItem;
   end;
 
   iImpostoCOFINS = interface
     ['{761CC2EB-179E-45CE-82D4-FFB5FB587FDC}']
+    function CST(const Value: TpcnCstCOFINS): iImpostoCOFINS;
+
+    function AliquotaCOFINS(const Value: Extended): iImpostoCOFINS; overload;
+    function AliquotaCOFINS: Extended; overload;
+
+    function ValorCOFINS: Extended;
+
     function Retorno: iImpostoItem;
   end;
 

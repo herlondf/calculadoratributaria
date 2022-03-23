@@ -38,7 +38,8 @@ uses
   Imposto.Tag.Det in '..\src\Imposto.Tag.Det.pas',
   Imposto.Tag.Det.Prod in '..\src\Imposto.Tag.Det.Prod.pas',
   Imposto.Tag.Det.Imposto in '..\src\Imposto.Tag.Det.Imposto.pas',
-  Imposto.Tag.Det.Imposto.ICMS in '..\src\Imposto.Tag.Det.Imposto.ICMS.pas';
+  Imposto.Tag.Det.Imposto.ICMS in '..\src\Imposto.Tag.Det.Imposto.ICMS.pas',
+  pcnConversao in '..\src\pcnConversao.pas';
 
 {$R *.res}
 

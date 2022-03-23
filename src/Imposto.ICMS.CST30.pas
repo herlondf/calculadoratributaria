@@ -27,12 +27,12 @@ end;
 
 function ValorBaseICMS30ST(AImpostoItem: iImpostoItem): Double;
 begin
-  Result := RoundABNT( ValorBaseICMS( AImpostoItem ) * ( ( 1 + AImpostoItem.ICMS.MVA ) / 100 )  , 2 );
+  Result := RoundABNT( ValorBaseICMS( AImpostoItem ) * ( 1 + ( AImpostoItem.ICMS.MVA / 100 ) ), 2 );
 end;
 
 function ValorICMS30ST(AImpostoItem: iImpostoItem): Double;
 begin
-  Result := RoundABNT( ( ValorBaseICMS30ST(AImpostoItem ) * ( AImpostoItem.ICMS.AliquotaICMSST / 100 ) ) - ValorBaseICMS30( AImpostoItem ), 2 );
+  Result := RoundABNT( ( ValorBaseICMS30ST(AImpostoItem) * ( AImpostoItem.ICMS.AliquotaICMSST / 100 ) ) - ValorICMS30(AImpostoItem), 2 );
 end;
 
 end.
