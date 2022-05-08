@@ -170,7 +170,8 @@ begin
 
   { Percorre a lista para ter o totalizador de produto  }
   for LImpostoItem in FImpostoItens do
-    LTotalProduto := LTotalProduto + LImpostoItem.Det.tagProd.vProdComDescUnit;
+    LTotalProduto := LTotalProduto + LImpostoItem.ValorCalculado;
+
 
   { Percorre a lista para calcular a proporcao de cada item e fazer o rateio }
   for LImpostoItem in FImpostoItens do

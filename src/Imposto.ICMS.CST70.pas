@@ -36,7 +36,7 @@ var
   LBCICMSST: Double;
 begin
   //Calcula a base de icms st
-  LBCICMSST := RoundABNT( ValorBaseICMS( AImpostoItem ) * ( ( 1 + AImpostoItem.ICMS.MVA ) / 100 )  , 2 );
+  LBCICMSST := RoundABNT( ValorBaseICMS( AImpostoItem ) * ( 1 + ( AImpostoItem.ICMS.MVA / 100 ) ), 2 );
 
   //Aplica a reducao na base de icms st
   Result := RoundABNT( LBCICMSST - ( ( AImpostoItem.ICMS.ReducaoBCST / 100 ) * LBCICMSST ), 2 );
@@ -44,7 +44,7 @@ end;
 
 function ValorICMS70ST(AImpostoItem: iImpostoItem): Double;
 begin
-  Result := RoundABNT( ( ValorBaseICMS70ST(AImpostoItem) * ( AImpostoItem.ICMS.AliquotaICMSST / 100 ) ) - ValorBaseICMS70(AImpostoItem), 2 );
+  Result := RoundABNT( ( ValorBaseICMS70ST(AImpostoItem) * ( AImpostoItem.ICMS.AliquotaICMSST / 100 ) ) - ValorICMS70(AImpostoItem), 2 );
 end;
 
 end.

@@ -39,6 +39,7 @@ type
     FvFCPST           : Double;
     FvFCPSTRet        : Double;
     FvIPIDevol        : Double;
+
     procedure ZerarValores;
   public
     procedure Recalcular(AImposto: iImposto; ATotalProd: Double);
@@ -131,18 +132,32 @@ begin
 
   ZerarValores;
 
-  FvProd := FvProd + ATotalProd;
-
   for LImpostoItem in AImposto.Items do
   begin
-    if not( LImpostoItem.ICMS.CST in [TpcnCSTIcms.cst30] ) then
+    if
+      ( LImpostoItem.ICMS.CST <> TpcnCSTIcms.cstVazio ) and
+      ( not( LImpostoItem.ICMS.CST   in [TpcnCSTIcms.cst30] ) )
+    then
     begin
     FvBC              := FvBC               + LImpostoItem.Det.tagImposto.ICMS.vBC;
     FvICMS            := FvICMS             + LImpostoItem.Det.tagImposto.ICMS.vICMS;
     end;
 
+    if
+      ( LImpostoItem.ICMS.CSOSN <> TpcnCSOSNIcms.csosnVazio ) and
+      ( not( LImpostoItem.ICMS.CSOSN in [TpcnCSOSNIcms.csosn201, TpcnCSOSNIcms.csosn202, TpcnCSOSNIcms.csosn203] ) )
+    then
+    begin
+    FvBC              := FvBC               + LImpostoItem.Det.tagImposto.ICMS.vBC;
+    FvICMS            := FvICMS             + LImpostoItem.Det.tagImposto.ICMS.vICMS;
+    end;
+
+
+
     FvBCST            := FvBCST             + LImpostoItem.Det.tagImposto.ICMS.vBCST;
     FvST              := FvST               + LImpostoItem.Det.tagImposto.ICMS.vICMSST;
+
+    FvProd            := FvProd             + LImpostoItem.Det.tagProd.vProd;
 
     FvFrete           := FvFrete            + LImpostoItem.Det.tagProd.vFrete;
     LvFreteConf       := LvFreteConf        + RoundABNT( LImpostoItem.Det.tagProd.vFrete, 2 );

@@ -25,7 +25,6 @@ type
     procedure CorrigeRateio(AParamRateio: TParamRateio; AValue: Double);
 
     function vProd : Extended;
-    function vProdComDescUnit: Extended;
     function vFrete: Extended;
     function vSeg  : Extended;
     function vOutro: Extended;
@@ -54,18 +53,22 @@ end;
 
 procedure TImpostoTagDetProd.Recalcular(AImposto: iImposto; ATotalProd: Double);
 begin
-  FProporcao := RoundABNT( ( vProdComDescUnit / ATotalProd ) * 100, 2 );
+  FProporcao := RoundABNT( ( FImpostoItem.ValorCalculado / ATotalProd ) * 100, 2 );
 
   FvFrete    := RoundABNT( ( ( FProporcao / 100 ) * AImposto.Frete    ), 2 );
   FvSeg      := RoundABNT( ( ( FProporcao / 100 ) * AImposto.Seguro   ), 2 );
   FvOutro    := RoundABNT( ( ( FProporcao / 100 ) * AImposto.Despesas ), 2 );
   FvDesc     := RoundABNT( ( ( FProporcao / 100 ) * AImposto.Desconto ), 2 );
 
-  if FImpostoItem.DescontoUnitarioPerc > 0 then
-    FImpostoItem.DescontoUnitario( CalcularPercentualValor( FImpostoItem.ValorUnitario, FImpostoItem.DescontoUnitarioPerc ) );
+  FImpostoItem.DescontoRateio    ( FvDesc );
+  FImpostoItem.DescontoRateioPerc( CalcularPercentualValor( ATotalProd, FvDesc ) );
 
-  if FImpostoItem.DescontoTotalPerc > 0 then
-    FImpostoItem.DescontoTotal( CalcularPercentualValor( ( FImpostoItem.Quantidade * FImpostoItem.ValorUnitario ), FImpostoItem.DescontoTotalPerc ) );
+
+//  if FImpostoItem.DescontoUnitarioPerc > 0 then
+//    FImpostoItem.DescontoUnitario( CalcularPercentualValor( FImpostoItem.ValorUnitario, FImpostoItem.DescontoUnitarioPerc ) );
+//
+//  if FImpostoItem.DescontoTotalPerc > 0 then
+//    FImpostoItem.DescontoTotal( CalcularPercentualValor( ( FImpostoItem.Quantidade * FImpostoItem.ValorUnitario ), FImpostoItem.DescontoTotalPerc ) );
 end;
 
 procedure TImpostoTagDetProd.CorrigeRateio(AParamRateio: TParamRateio; AValue: Double);
@@ -81,11 +84,6 @@ end;
 function TImpostoTagDetProd.vProd: Extended;
 begin
   Result := RoundABNT( ( FImpostoItem.Quantidade * FImpostoItem.ValorUnitario ), 2 );
-end;
-
-function TImpostoTagDetProd.vProdComDescUnit: Extended;
-begin
-  Result := RoundABNT( ( FImpostoItem.Quantidade * ( FImpostoItem.ValorUnitario - FImpostoItem.DescontoUnitario  ) - FImpostoItem.DescontoTotal ), 2 )
 end;
 
 function TImpostoTagDetProd.vFrete: Extended;
@@ -105,7 +103,7 @@ end;
 
 function TImpostoTagDetProd.vDesc: Extended;
 begin
-  Result := FvDesc + FImpostoItem.DescontoUnitario + FImpostoItem.DescontoTotal;
+  Result := ( FImpostoItem.DescontoUnitario * FImpostoItem.Quantidade ) + FImpostoItem.DescontoRateio;
 end;
 
 end.

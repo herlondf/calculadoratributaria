@@ -32,7 +32,6 @@ type
   iImpostoTagDetProd = interface
     ['{18AC50C7-F610-4F5F-AF7C-760EAF22A41B}']
     function vProd : Extended;
-    function vProdComDescUnit: Extended;
     function vFrete: Extended;
     function vSeg  : Extended;
     function vOutro: Extended;
@@ -65,28 +64,21 @@ type
 
   iImpostoTagDetImpostoICMS = interface
     ['{C03C96AE-C746-4B76-A728-4C5024C3C64A}']
-    //Valor da BC do ICMS
+    function pRedBC  : Double;
     function vBC     : Double;
-
-    //Valor do ICMS
+    function pICMS   : Double;
     function vICMS   : Double;
 
-    //Valor do ICMS da Operação
     function vICMSOp : Double;
     function vICMSDif: Double;
-
-    function vCredSN : Double;
     function pCredSN : Double;
-
-    function pICMSST : Double;
-
-    //Valor da BC do ICMS ST
-    function vBCST   : Double;
-
-    //Valor do ICMS ST
-    function vICMSST : Double;
+    function vCredSN : Double;
 
     function pMVAST  : Double;
+    function pRedBCST: Double;
+    function vBCST   : Double;
+    function pICMSST : Double;
+    function vICMSST : Double;
   end;
 
   iImpostoTagDetImpostoIPI = interface

@@ -37,9 +37,9 @@ end;
 function ValorBaseIPI(AImpostoItem: iImpostoItem): Double;
 begin
   Result := (
-      AImpostoItem.Det.tagProd.vProdComDescUnit  +
-      AImpostoItem.Det.tagProd.vFrete            +
-      AImpostoItem.Det.tagProd.vSeg              +
+      AImpostoItem.ValorCalculado      +
+      AImpostoItem.Det.tagProd.vFrete  +
+      AImpostoItem.Det.tagProd.vSeg    +
       AImpostoItem.Det.tagProd.vOutro
   );
 end;

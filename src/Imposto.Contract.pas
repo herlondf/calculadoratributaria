@@ -108,11 +108,13 @@ type
     function DescontoUnitarioPerc(const Value: Double): iImpostoItem; overload;
     function DescontoUnitarioPerc: Double; overload;
 
-    function DescontoTotal(const Value: Double): iImpostoItem; overload;
-    function DescontoTotal: Double; overload;
+    function DescontoRateio(const Value: Double): iImpostoItem; overload;
+    function DescontoRateio: Double; overload;
 
-    function DescontoTotalPerc(const Value: Double): iImpostoItem; overload;
-    function DescontoTotalPerc: Double; overload;
+    function DescontoRateioPerc(const Value: Double): iImpostoItem; overload;
+    function DescontoRateioPerc: Double; overload;
+
+    function ValorCalculado: Double;
 
     function ICMS    : iImpostoICMS;
     function IPI     : iImpostoIPI;

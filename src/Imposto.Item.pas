@@ -1,4 +1,4 @@
-unit Imposto.Item;
+﻿unit Imposto.Item;
 
 interface
 
@@ -12,35 +12,32 @@ uses
   System.SysUtils,
   System.Generics.Collections;
 
-type
+  type
   TImpostoItem = class(TInterfacedObject, iImpostoItem)
     constructor Create(AImpostoCalc: iImposto);
     destructor Destroy; override;
     class function New(AImpostoCalc: iImposto): iImpostoItem;
   private
     [weak]
-    FImpostoCalc          : iImposto;
-
-    FOnChangeItem         : TOnChangeItem;
-
-    FId                   : Integer;
-    FCFOP                 : Integer;
-    FQuantidade           : Double;
-    FValorUnitario        : Double;
-    FDescontoUnitario     : Double;
-    FDescontoUnitarioPerc : Double;
-    FDescontoTotal        : Double;
-    FDescontoTotalPerc    : Double;
-
-    FImpostoICMS          : iImpostoICMS;
-    FImpostoIPI           : iImpostoIPI;
-    FImpostoPIS           : iImpostoPIS;
-    FImpostoCOFINS        : iImpostoCOFINS;
-
-    FImpostoTagDet        : IImpostoTagDet;
+    FImpostoCalc             : iImposto;
+    FOnChangeItem            : TOnChangeItem;
+    FId                      : Integer;
+    FCFOP                    : Integer;
+    FQuantidade              : Double;
+    FValorUnitario           : Double;
+    FDescontoUnitario        : Double;
+    FDescontoUnitarioPerc    : Double;
+    FDescontoRateio          : Double;
+    FDescontoRateioPerc      : Double;
+    FImpostoICMS             : iImpostoICMS;
+    FImpostoIPI              : iImpostoIPI;
+    FImpostoPIS              : iImpostoPIS;
+    FImpostoCOFINS           : iImpostoCOFINS;
+    FImpostoTagDet           : IImpostoTagDet;
 
     procedure ZerarValores;
     procedure ZerarDescontos;
+    procedure ZerarDescontosRateio;
   public
     function OnChangeItem(const Value: TOnChangeItem): iImpostoItem;
 
@@ -63,21 +60,20 @@ type
     function DescontoUnitarioPerc(const Value: Double): iImpostoItem; overload;
     function DescontoUnitarioPerc: Double; overload;
 
-    function DescontoTotal(const Value: Double): iImpostoItem; overload;
-    function DescontoTotal: Double; overload;
+    function DescontoRateio(const Value: Double): iImpostoItem; overload;
+    function DescontoRateio: Double; overload;
 
-    function DescontoTotalPerc(const Value: Double): iImpostoItem; overload;
-    function DescontoTotalPerc: Double; overload;
+    function DescontoRateioPerc(const Value: Double): iImpostoItem; overload;
+    function DescontoRateioPerc: Double; overload;
+
+    function ValorCalculado: Double;
 
     function ICMS    : iImpostoICMS;
     function IPI     : iImpostoIPI;
     function PIS     : iImpostoPIS;
     function COFINS  : iImpostoCOFINS;
-
     function Recalcular: iImpostoItem;
-
     function Det: IImpostoTagDet;
-
     function Retorno : iImposto;
   end;
 
@@ -96,7 +92,6 @@ end;
 
 destructor TImpostoItem.Destroy;
 begin
-
   inherited;
 end;
 
@@ -113,21 +108,26 @@ end;
 
 procedure TImpostoItem.ZerarValores;
 begin
-  FQuantidade           := 0;
-  FValorUnitario        := 0;
-  FDescontoUnitario     := 0;
-  FDescontoUnitarioPerc := 0;
-  FDescontoTotal        := 0;
-  FDescontoTotalPerc    := 0;
+  FQuantidade            := 0;
+  FValorUnitario         := 0;
+  FDescontoUnitario      := 0;
+  FDescontoUnitarioPerc  := 0;
+  FDescontoRateio        := 0;
+  FDescontoRateioPerc    := 0;
 end;
 
 procedure TImpostoItem.ZerarDescontos;
 begin
-  FDescontoUnitario     := 0;
-  FDescontoUnitarioPerc := 0;
-  FDescontoTotal        := 0;
-  FDescontoTotalPerc    := 0;
+  FDescontoUnitario      := 0;
+  FDescontoUnitarioPerc  := 0;
 end;
+
+procedure TImpostoItem.ZerarDescontosRateio;
+begin
+  FDescontoRateio        := 0;
+  FDescontoRateioPerc    := 0;
+end;
+
 
 function TImpostoItem.Id(const Value: Integer): iImpostoItem;
 begin
@@ -151,7 +151,6 @@ begin
   Result := Self;
   CFOP( StrToInt( Value ) );
 end;
-
 
 function TImpostoItem.CFOP: Integer;
 begin
@@ -185,8 +184,12 @@ end;
 function TImpostoItem.DescontoUnitario(const Value: Double): iImpostoItem;
 begin
   Result := Self;
-  if Value > 0 then ZerarDescontos;
-  FDescontoUnitario := Value;
+  if Value > 0 then
+  begin
+    ZerarDescontos;
+    FDescontoUnitario     := Value;
+    FDescontoUnitarioPerc := ( FDescontoUnitario / FValorUnitario ) * 100;
+  end;
 end;
 
 function TImpostoItem.DescontoUnitario: Double;
@@ -197,8 +200,12 @@ end;
 function TImpostoItem.DescontoUnitarioPerc(const Value: Double): iImpostoItem;
 begin
   Result := Self;
-  if Value > 0 then ZerarDescontos;
-  FDescontoUnitarioPerc := Value;
+  if Value > 0 then
+  begin
+    ZerarDescontos;
+    FDescontoUnitarioPerc := Value;
+    FDescontoUnitario     := ( FDescontoUnitarioPerc * FValorUnitario ) / 100;
+  end;
 end;
 
 function TImpostoItem.DescontoUnitarioPerc: Double;
@@ -206,28 +213,35 @@ begin
   Result := FDescontoUnitarioPerc;
 end;
 
-function TImpostoItem.DescontoTotal(const Value: Double): iImpostoItem;
+function TImpostoItem.DescontoRateio(const Value: Double): iImpostoItem;
 begin
   Result := Self;
-  if Value > 0 then ZerarDescontos;
-  FDescontoTotal := Value;
+
+  //ZerarDescontosRateio;
+  FDescontoRateio := Value;
 end;
 
-function TImpostoItem.DescontoTotal: Double;
+function TImpostoItem.DescontoRateio: Double;
 begin
-  Result := FDescontoTotal;
+  Result := FDescontoRateio;
 end;
 
-function TImpostoItem.DescontoTotalPerc(const Value: Double): iImpostoItem;
+function TImpostoItem.DescontoRateioPerc(const Value: Double): iImpostoItem;
 begin
   Result := Self;
-  if Value > 0 then ZerarDescontos;
-  FDescontoTotalPerc := Value;
+
+  //ZerarDescontosRateio;
+  FDescontoRateioPerc := Value;
 end;
 
-function TImpostoItem.DescontoTotalPerc: Double;
+function TImpostoItem.ValorCalculado: Double;
 begin
-  Result := FDescontoTotalPerc;
+  Result := ( ( FValorUnitario - FDescontoUnitario ) * FQuantidade );
+end;
+
+function TImpostoItem.DescontoRateioPerc: Double;
+begin
+  Result := FDescontoRateioPerc;
 end;
 
 function TImpostoItem.ICMS: iImpostoICMS;

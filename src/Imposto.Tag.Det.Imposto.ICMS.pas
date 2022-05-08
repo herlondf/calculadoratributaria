@@ -1,7 +1,5 @@
 unit Imposto.Tag.Det.Imposto.ICMS;
-
 interface
-
 uses
   Imposto.ICMS.CST00,
   Imposto.ICMS.CST10,
@@ -22,7 +20,6 @@ uses
   Imposto.Utils,
   Imposto.Aliquota,
   Imposto.Contract;
-
 type
   TImpostoTagDetImpostoICMS = class(TInterfacedObject, iImpostoTagDetImpostoICMS)
     constructor Create(AImpostoItem: iImpostoItem);
@@ -32,42 +29,42 @@ type
     [weak]
     FImpostoItem     : iImpostoItem;
   public
+    function pRedBC  : Double;
     function vBC     : Double;
     function vICMS   : Double;
+    function pICMS   : Double;
     function vICMSOp : Double;
     function vICMSDif: Double;
     function vCredSN : Double;
     function pCredSN : Double;
+    function pRedBCST: Double;
     function vBCST   : Double;
     function pICMSST : Double;
     function vICMSST : Double;
     function pMVAST  : Double;
   end;
-
 implementation
-
 { TImpostoTagDetImpostoICMS }
-
 constructor TImpostoTagDetImpostoICMS.Create(AImpostoItem: iImpostoItem);
 begin
   FImpostoItem := AImpostoItem;
 end;
-
 destructor TImpostoTagDetImpostoICMS.Destroy;
 begin
-
   inherited;
 end;
-
 class function TImpostoTagDetImpostoICMS.New(AImpostoItem: iImpostoItem): iImpostoTagDetImpostoICMS;
 begin
   Result := Self.Create(AImpostoItem);
+end;
+function TImpostoTagDetImpostoICMS.pRedBC: Double;
+begin
+  Result := FImpostoItem.ICMS.ReducaoBC;
 end;
 
 function TImpostoTagDetImpostoICMS.vBC: Double;
 begin
   Result := 0;
-
   if FImpostoItem.ICMS.CST <> TpcnCSTIcms.cstVazio  then
   begin
     case FImpostoItem.ICMS.CST of
@@ -102,11 +99,9 @@ begin
     end;
   end;
 end;
-
 function TImpostoTagDetImpostoICMS.vICMS: Double;
 begin
   Result := 0;
-
   if FImpostoItem.ICMS.CST <> TpcnCSTIcms.cstVazio  then
   begin
     case FImpostoItem.ICMS.CST of
@@ -140,11 +135,13 @@ begin
     end;
   end;
 end;
-
+function TImpostoTagDetImpostoICMS.pICMS: Double;
+begin
+  Result := FImpostoItem.ICMS.AliquotaICMS;
+end;
 function TImpostoTagDetImpostoICMS.vICMSOp: Double;
 begin
   Result := 0;
-
   if FImpostoItem.ICMS.CST <> TpcnCSTIcms.cstVazio  then
   begin
     case FImpostoItem.ICMS.CST of
@@ -152,11 +149,9 @@ begin
     end;
   end;
 end;
-
 function TImpostoTagDetImpostoICMS.vICMSDif: Double;
 begin
   Result := 0;
-
   if FImpostoItem.ICMS.CST <> TpcnCSTIcms.cstVazio  then
   begin
     case FImpostoItem.ICMS.CST of
@@ -164,29 +159,27 @@ begin
     end;
   end;
 end;
-
 function TImpostoTagDetImpostoICMS.vCredSN: Double;
 begin
   Result := 0;
-
   case FImpostoItem.ICMS.CSOSN of
     TpcnCSOSNIcms.csosn101: Result := ValorCredSN101(FImpostoItem);
   end;
 end;
-
 function TImpostoTagDetImpostoICMS.pCredSN: Double;
 begin
   Result := 0;
-
   case FImpostoItem.ICMS.CSOSN of
     TpcnCSOSNIcms.csosn101, TpcnCSOSNIcms.csosn201: Result := FImpostoItem.ICMS.AliquotaICMS;
   end;
 end;
-
+function TImpostoTagDetImpostoICMS.pRedBCST: Double;
+begin
+  Result := FImpostoItem.ICMS.ReducaoBCST;
+end;
 function TImpostoTagDetImpostoICMS.vBCST: Double;
 begin
   Result := 0;
-
   if FImpostoItem.ICMS.CST <> TpcnCSTIcms.cstVazio  then
   begin
     case FImpostoItem.ICMS.CST of
@@ -206,20 +199,16 @@ begin
     end;
   end;
 end;
-
 function TImpostoTagDetImpostoICMS.pICMSST: Double;
 begin
-
   if FImpostoItem.ICMS.AliquotaICMSST <> 0 then
     Result := FImpostoItem.ICMS.AliquotaICMSST
   else
     Result :=  BuscarAliquota( FImpostoItem.Retorno.UFOrigem, FImpostoItem.Retorno.UFDestino );
 end;
-
 function TImpostoTagDetImpostoICMS.vICMSST: Double;
 begin
   Result := 0;
-
   if FImpostoItem.ICMS.CST <> TpcnCSTIcms.cstVazio  then
   begin
     case FImpostoItem.ICMS.CST of
@@ -239,10 +228,8 @@ begin
     end
   end;
 end;
-
 function TImpostoTagDetImpostoICMS.pMVAST  : Double;
 begin
   Result := FImpostoItem.ICMS.MVA;
 end;
-
 end.
